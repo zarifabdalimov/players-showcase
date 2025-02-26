@@ -1,95 +1,89 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Hls } from "@/components/Hls";
+import { Howler } from "@/components/Howler";
+import { RegularAudio } from "@/components/RegularAudio";
+import { Wavesurfer } from "@/components/Wavesurfer";
+
+import { useState } from "react";
+
+const sources = [
+  {
+    label: "MP3",
+    src: "https://storage.googleapis.com/doucse-platform-1c087-example-2/mp3/MP3.mp3",
+  },
+  {
+    label: "MP3 64kbps",
+    src: "https://storage.googleapis.com/doucse-platform-1c087-example-2/mp3-64kbps/MP3-64kbps%20.mp3",
+  },
+  {
+    label: "WAV",
+    src: "https://storage.googleapis.com/doucse-platform-1c087-example-2/wav/WAV.wav",
+  },
+];
+
+const streams = [
+  {
+    label: "HLS",
+    src: "https://storage.googleapis.com/doucse-platform-1c087-example-2/hls/audio.m3u8",
+  },
+];
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [src, setSrc] = useState<string>(sources[0].src);
+  const [stream, setStream] = useState<string>(streams[0].src);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  return (
+    <div className="container">
+      <div className="d-flex flex-column gap-3 pt-5">
+        <h1>Audio</h1>
+        <div className="card p-4 d-flex flex-column gap-3">
+          <h2>HLS</h2>
+          <select
+            className="form-select"
+            onChange={(e) => setStream(e.target.value)}
+            value={stream}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+            {streams.map(({ label, src }) => (
+              <option key={src} value={src}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <h4>
+            Entered source: <b>{stream}</b>
+          </h4>
+          {stream ? (
+            <div>
+              <Hls stream={stream} />
+            </div>
+          ) : null}
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <div className="card p-4 d-flex flex-column gap-3">
+          <h2>MP3 and WAV</h2>
+          <select
+            className="form-select"
+            onChange={(e) => setSrc(e.target.value)}
+            value={src}
+          >
+            {sources.map(({ label, src }) => (
+              <option key={src} value={src}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <h4>
+            Entered source: <b>{src}</b>
+          </h4>
+          {src ? (
+            <div className="d-flex flex-column gap-1">
+              <RegularAudio src={src} />
+              <Howler src={src} />
+              <Wavesurfer src={src} />
+            </div>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
